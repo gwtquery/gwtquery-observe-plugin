@@ -1,0 +1,7 @@
+.classpath
+.project
+.settings
+gwt-unitCache
+target
+war
+www-test
