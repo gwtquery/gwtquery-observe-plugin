@@ -17,7 +17,7 @@ A gwtQuery plugin which simplifies the use of the new DOM Mutation Observer inte
    ```
 2. Then use it as any other gQuery plugin through the `as()` method
    ```
-   // Observe to attribute changes
+   // Observe attribute changes in all elements matching the selector
    $(selector)
      .as(Observe.Observe)
      .observe(Observe.createInit()
@@ -27,6 +27,18 @@ A gwtQuery plugin which simplifies the use of the new DOM Mutation Observer inte
          public void onMutation(List<MutationRecord> mutations) {
            console.log(mutations.get(0).type());
          }
+     });
+
+   // Observe changes in a GWT widget
+   $(myGwtGrid)
+     .as(Observe.Observe)
+     .observe(Observe.createInit()
+                     .childList(true)
+                     .subtree(true),
+        new Function() {
+          public void f() {
+              List<MutationRecord> mutations = arguments(0);
+          }
      });
 
    // Disconnect
