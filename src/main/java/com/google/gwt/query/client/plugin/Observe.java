@@ -18,7 +18,7 @@ import com.google.gwt.query.client.plugins.Plugin;
 
 /**
  * Observe for changes in the elements.
- * 
+ *
  * @author Manolo Carrasco
  */
 public class Observe extends Events {
@@ -165,17 +165,24 @@ public class Observe extends Events {
   /**
    * Observe to element changes based on the configuration set.
    *
-   * cfg accepts a set of properties separated by comma, valid values are: attributes,
+   * config: accepts a set of properties separated by comma, valid values are: attributes,
    * characterData, childList, subtree.
+   *
+   * func: receives a list of MutationListener as first argument
    */
-  public Observe observe(String cfg, Function f) {
-    return observe(parseCfg(cfg), f);
+  public Observe observe(String config, Function func) {
+    return observe(parseCfg(config), func);
   }
 
   public Observe observe(MutationObserverInit init, MutationListener f) {
     return observe(init.<Properties> getDataImpl(), f);
   }
 
+  /**
+   * Observe to element changes based on the configuration set.
+   *
+   * func: receives a list of MutationListener as first argument
+   */
   public Observe observe(MutationObserverInit init, Function f) {
     return observe(init.<Properties> getDataImpl(), f);
   }
@@ -226,11 +233,11 @@ public class Observe extends Events {
   }-*/;
 
   private static void onMutation(Object handler, JsArray<JavaScriptObject> mutations) {
-    Properties p = Properties.create().set("mutations", mutations);
+    MutationRecords r = GQ.create(MutationRecords.class, Properties.create().set("mutations", mutations));
     if (handler instanceof Function) {
-      ((Function) handler).f(p);
+      ((Function) handler).f(r.mutations());
     } else if (handler instanceof MutationListener) {
-      ((MutationListener) handler).onMutation(GQ.create(MutationRecords.class, p).mutations());
+      ((MutationListener) handler).onMutation(r.mutations());
     }
   }
 }
