@@ -1,12 +1,15 @@
 
 
 ## Introduction
-A gwtQuery plugin which simplifies the use of the new DOM Mutation Observer interface introduced in newer browsers.
+A gwtQuery plugin which simplifies the use of the new DOM-Mutation, Object and Array Observe interfaces introduced in newer browsers.
+
+For mutation changes it always relays in native MutationObserver, for Object and Array changes it use native implementation if available
+otherwise the plugin automatically loads the [object-observer](https://github.com/MaxArt2501/object-observe) polyfill.
 
 ## Usage
 
 1. You only have to drop the .jar file in your classpath, or add this dependency to your project:
-   
+
    ```
         <dependency>
             <groupId>com.googlecode.gwtquery.plugins</groupId>
@@ -15,14 +18,20 @@ A gwtQuery plugin which simplifies the use of the new DOM Mutation Observer inte
             <scope>provided</scope>
         </dependency>
    ```
-2. Then use it as any other gQuery plugin through the `as()` method
+
+2. By default, the plugin does not load polyfills, if you want to use the pluggin in non-chrome browsers you have to add this line to your module file:
+   ```
+    <inherits name='com.google.gwt.query.Observe'/>
+   ```
+
+3. To observe Element mutations, use it as any other gQuery plugin through the `as()` method
    ```
    // Observe attribute changes in all elements matching the selector
    $(selector)
      .as(Observe.Observe)
-     .observe(Observe.createInit()
-                     .attributes(true)
-                     .attributeOldValue(true),
+     .mutation(Observe.createMutationInit()
+                      .attributes(true)
+                      .attributeOldValue(true),
        new MutationListener() {
          public void onMutation(List<MutationRecord> mutations) {
            console.log(mutations.get(0).type());
@@ -30,11 +39,12 @@ A gwtQuery plugin which simplifies the use of the new DOM Mutation Observer inte
      });
 
    // Observe changes in a GWT widget
-   $(myGwtGrid)
+   $(myWidget)
      .as(Observe.Observe)
-     .observe(Observe.createInit()
-                     .childList(true)
-                     .subtree(true),
+     .mutation(
+        // You can use either MutationInit or a list of strings
+        "childList, subtree",
+        // You can use either MutationListener interface or Function
         new Function() {
           public void f() {
               List<MutationRecord> mutations = arguments(0);
@@ -44,10 +54,31 @@ A gwtQuery plugin which simplifies the use of the new DOM Mutation Observer inte
    // Disconnect
    $(selector).as(Observe.Observe).disconnect();
    ```
-3. gQuery Observe plugin supports all the options defined in [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) specification.
-   Use the `MutationObserverInit` interface for setting configuration properties, and the `MutationRecord` to read mutation changes.
+
+4. For arrays and objects, you have a set of static methods:
+   ```
+   // Observe properties changes in an object
+   Observe.observe(myObject,
+       // You can use either ObserveInit or a list of strings
+       Observe.createObserveInit().add(true).delete(true).update(true),
+       // You can use either ObserveListener interface or Function
+       new ObserveListener() {
+         public void onChange(List<ChangeRecord> changes) {
+           console.log(changes.get(0).type());
+         }
+     });
+
+   // Unobserve
+   Observe.unobserve(myObject);
+   ```
+
+5. gQuery Observe plugin supports all the options defined in [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) specification. Use the `MutationObserverInit` interface for setting configuration properties, and the `MutationRecord` to read mutations.
+
+6. To observe javascript Object or Array, use the `ObjectObserverInit` for setting configuration properties, and the `ChangeRecord` to read changes.
 
 
 ## Browser compatibility
 
-   Chrome 18, FF 14, IE 11, Opera 15, Safari 6
+   Mutations: Chrome 18, FF 14, IE 11, Opera 15, Safari 6
+   Object & Array Observe: Chrome in native mode and FF, IE, Safari through polyfill.
+

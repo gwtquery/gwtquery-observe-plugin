@@ -1,0 +1,37 @@
+<module>
+
+    <inherits name='com.google.gwt.query.Query'/>
+
+    <!-- Detect whether Object.observe is available -->
+    <define-property name="observeCapability" values="native,js"/>
+    <property-provider name="observeCapability">
+        <![CDATA[
+         return 'observe' in Object ? 'native' : 'js';
+        ]]>
+    </property-provider>
+    <define-property name="observeVersion" values="lite,full"/>
+    <set-property name="observeVersion" value="lite"/>
+
+    <set-property name="observeCapability" value="js">
+        <any>
+            <when-property-is name="user.agent" value="gecko1_8"/>
+            <when-property-is name="user.agent" value="ie6"/>
+            <when-property-is name="user.agent" value="ie8"/>
+            <when-property-is name="user.agent" value="ie9"/>
+            <when-property-is name="user.agent" value="ie10"/>
+        </any>
+    </set-property>
+    <set-property name="observeCapability" value="native" >
+       <when-property-is name="user.agent" value="safari" />
+    </set-property>
+    
+    <replace-with class="com.google.gwt.query.client.plugins.observe.ObjectObserve.ObjectObservePolyfillLite">
+        <when-type-assignable class="com.google.gwt.query.client.plugins.observe.ObjectObserve.ObjectObserveNative"/>
+    </replace-with>
+
+    <replace-with class="com.google.gwt.query.client.plugins.observe.ObjectObserve.ObjectObservePolyfillFull">
+        <when-type-assignable class="com.google.gwt.query.client.plugins.observe.ObjectObserve.ObjectObserveNative"/>
+        <when-property-is name="observeCapability" value="js"/>
+        <when-property-is name="observeVersion" value="full"/>
+    </replace-with>
+</module>
