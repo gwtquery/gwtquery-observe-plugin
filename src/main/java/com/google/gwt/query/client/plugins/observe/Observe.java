@@ -315,7 +315,7 @@ public class Observe extends Events {
   }
 
   public static void observe(JavaScriptObject o, Object handler) {
-    observe(o, createObserveInit().add(true).delete(true).update(true), handler);
+    observe(o, createObserveInit().add(true).delete(true).update(true).splice(true), handler);
   }
 
   public static void observe(JavaScriptObject o, ObjectObserverInit cfg, Object handler) {
@@ -336,7 +336,7 @@ public class Observe extends Events {
   }
 
   public static void unobserve(JavaScriptObject o, Object handler) {
-    objectUnobserveImpl(o, handler);
+    unregisterHandler(o, handler);
   }
 
   private static void onChange(Object handler, JsArray<JavaScriptObject> mutations) {
@@ -407,6 +407,10 @@ public class Observe extends Events {
     return jsh;
   }
 
+  private static JavaScriptObject observerForObject(JavaScriptObject o) {
+    return JsUtils.prop(window, JsUtils.isArray(o) ? "Array" : "Object");
+  }
+
   private native static JavaScriptObject createJsHandler(Object hdl, boolean mutation) /*-{
     var f = function(changes) {
       @com.google.gwt.query.client.plugins.observe.Observe::onChange(*)(hdl, changes);
@@ -414,10 +418,9 @@ public class Observe extends Events {
     return mutation ? new $wnd.MutationObserver(f) : f;
   }-*/;
 
-  private native static void objectObserveImpl(JavaScriptObject o, JavaScriptObject cfg, JavaScriptObject hdl) /*-{
-    var O = @com.google.gwt.query.client.js.JsUtils::isArray(*)(o) ? $wnd.Array : $wnd.Object;
-    O.observe(o, hdl, cfg);
-  }-*/;
+  private static void objectObserveImpl(JavaScriptObject o, JavaScriptObject cfg, JavaScriptObject hdl)  {
+   JsUtils.jsni(observerForObject(o), "observe", o, hdl, cfg);
+  }
 
   private static native void mutationDisconnectImpl(Node e, JavaScriptObject hdl) /*-{
     hdl.disconnect();
@@ -427,8 +430,7 @@ public class Observe extends Events {
     hdl.observe(e, cfg);
   }-*/;
 
-  private static native void objectUnobserveImpl(JavaScriptObject o, Object hdl) /*-{
-    var O = @com.google.gwt.query.client.js.JsUtils::isArray(*)(o) ? $wnd.Array : $wnd.Object;
-    O.unobserve(o, hdl);;
-  }-*/;
+  private static void objectUnobserveImpl(JavaScriptObject o, JavaScriptObject hdl)  {
+    JsUtils.jsni(observerForObject(o), "unobserve", o, hdl);
+  }
 }
