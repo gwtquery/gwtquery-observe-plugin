@@ -6,6 +6,10 @@ A gwtQuery plugin which simplifies the use of the new DOM-Mutation, Object and A
 For mutation changes it always relays in native MutationObserver, for Object and Array changes it use native implementation if available
 otherwise the plugin automatically loads the [object-observer](https://github.com/MaxArt2501/object-observe) polyfill.
 
+## Demo
+
+http://manolo.github.io/gwtquery-observe-demo/index.html
+
 ## Usage
 
 1. You only have to drop the .jar file in your classpath, or add this dependency to your project:
