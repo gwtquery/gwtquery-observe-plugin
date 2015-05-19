@@ -8,8 +8,11 @@ import com.google.gwt.query.client.builders.JsniBundle;
 import com.google.gwt.query.client.js.JsUtils;
 
 public class ObjectObserve  {
-  private static final String FULLURL = "https://raw.githubusercontent.com/MaxArt2501/object-observe/master/dist/object-observe.js";
-  private static final String LITEURL = "https://raw.githubusercontent.com/MaxArt2501/object-observe/master/dist/object-observe-lite.js";
+  // private static final String FULLURL = "https://raw.githubusercontent.com/MaxArt2501/object-observe/master/dist/object-observe.js";
+  private static final String FULLURL = "poly/object-observe.js";
+  // private static final String LITEURL = "https://raw.githubusercontent.com/MaxArt2501/object-observe/master/dist/object-observe-lite.js";
+  private static final String LITEURL = "poly/object-observe-lite.js";
+
   private static final String PREPEND = "$wnd.observelite=true;\n(function(window, document, console){\nvar Object = window.Object; var Array = window.Array;\n";
   private static final String POSTPEND = "\nArray.unobserve = Object.unobserve; Array.observe = Object.observe;\n}.apply($wnd, [$wnd, $doc, $wnd.console]));";
 
